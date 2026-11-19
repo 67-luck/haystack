@@ -283,8 +283,9 @@ class MockChatGenerator:
         component_info = ComponentInfo.from_component(self)
         chunks: list[StreamingChunk] = []
 
-        # Stream the text content word by word in content block 0.
-        parts = re.findall(r"\S+\s*", reply.text) if reply.text else []
+        # Stream the text content word by word in content block 0. Leading whitespace goes with the first word, and
+        # whitespace-only text is one chunk, so the chunks always join back into exactly the reply text.
+        parts = re.findall(r"\s*\S+\s*|\s+", reply.text) if reply.text else []
         for idx, part in enumerate(parts):
             chunks.append(
                 StreamingChunk(

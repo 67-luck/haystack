@@ -1,0 +1,6 @@
+---
+fixes:
+  - |
+    ``MockChatGenerator`` no longer drops leading whitespace, or the whole text of a whitespace-only reply, from the
+    ``StreamingChunk`` objects it sends to a streaming callback. The streamed chunks now always join back into
+    exactly the text of the returned reply.

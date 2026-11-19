@@ -205,6 +205,15 @@ class TestMockChatGenerator:
         # the returned reply matches the predefined response
         assert result["replies"][0].text == "hello there friend"
 
+    @pytest.mark.parametrize("text", ["\n\nhello there", "  indented reply\n", "   "])
+    def test_streaming_chunks_preserve_leading_and_whitespace_only_text(self, text: str) -> None:
+        chunks: list[StreamingChunk] = []
+        result = MockChatGenerator(text).run([ChatMessage.from_user("hi")], streaming_callback=chunks.append)
+        assert result["replies"][0].text == text
+        # the streamed chunks must reassemble into exactly the reply text
+        assert "".join(chunk.content for chunk in chunks) == text
+        assert chunks[0].start is True
+
     def test_run_signature_matches_openai_order(self) -> None:
 
         # run()/run_async() must mirror OpenAIChatGenerator's parameter order so the mock is a positional drop-in.
